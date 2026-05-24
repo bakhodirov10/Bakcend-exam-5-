@@ -1,13 +1,17 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 async function connectDB() {
-    try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/backend-exam")
-        console.log("DataBase succesfully connected")
-    } catch (error) {
-        console.log(`DataBase connection error: ${error}`)
-        process.exit(1)
-    }
+  try {
+    // Agar kodingiz Render'ga borsa, u yerdagi MONGO_URI ni o'qiydi
+    // Agar kompyuteringizda bo'lsa, orqadagi Atlas linkidan foydalanadi
+    const dbURI = process.env.MONGO_URL || "mongodb+srv://boxodirov15:OYRPM0u0FQPrZLuJ@exam.zpvkxha.mongodb.net/backend-exam?retryWrites=true&w=majority&appName=exam";
+    
+    await mongoose.connect(dbURI);
+    console.log("DataBase successfully connected ✅");
+  } catch (error) {
+    console.error("DataBase connection error ❌:", error.message);
+    // process.exit(1) ni butunlay olib tashladik, server krash bo'lmaydi!
+  }
 }
 
-module.exports = connectDB
+module.exports = connectDB;
