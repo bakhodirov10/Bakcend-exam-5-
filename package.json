@@ -17,7 +17,7 @@
   "name": "backend-exam",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node --watch app.js",
     "dev": "nodemon app.js"
