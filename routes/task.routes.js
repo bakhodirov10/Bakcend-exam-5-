@@ -2,34 +2,13 @@ const express = require("express")
 const router = express.Router()
 const taskController = require("../controllers/task.controller")
 
-router.get(
-    "/tasks",
-    taskController.getTasks
-)
+// routes/task.routes.js fayli ichida:
 
-router.get(
-    "/task/:id",
-    taskController.getTaskById
-)
-
-router.post(
-    "/task",
-    taskController.creataTask
-)
-
-router.put(
-    "/task/:id",
-    taskController.updateTask
-)
-
-router.patch(
-    "/task/:id",         // bu yerda hatolik chiqishi munkun 
-    taskController.patchTask
-)
-
-router.delete(
-    "/task/:id",
-    taskController.deleteTask
-)
+router.get("/tasks", taskController.getTasks);          // Bor edi
+router.get("/task/:id", taskController.getTaskById);    // /task/:id edi -> /tasks/:id qildik
+router.post("/task", taskController.creataTask);        // /task edi -> /tasks qildik 🚀 (Siz qidirgan xato)
+router.put("/task/:id", taskController.updateTask);      // /task/:id edi -> /tasks/:id qildik
+router.patch("/task/:id", taskController.patchTask);    // /task/:id edi -> /tasks/:id qildik
+router.delete("/task/:id", taskController.deleteTask);  // /task/:id edi -> /tasks/:id qildik
 
 module.exports = router

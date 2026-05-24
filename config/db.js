@@ -4,7 +4,7 @@ async function connectDB() {
   try {
     // Agar kodingiz Render'ga borsa, u yerdagi MONGO_URI ni o'qiydi
     // Agar kompyuteringizda bo'lsa, orqadagi Atlas linkidan foydalanadi
-    const dbURI = process.env.MONGO_URL || "mongodb+srv://boxodirov15:OYRPM0u0FQPrZLuJ@exam.zpvkxha.mongodb.net/backend-exam?retryWrites=true&w=majority&appName=exam";
+    const dbURI = process.env.MONGO_URL
     
     await mongoose.connect(dbURI);
     console.log("DataBase successfully connected ✅");
