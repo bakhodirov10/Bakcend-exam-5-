@@ -13,6 +13,7 @@ exports.registerUser = async (req, res) => {
         message: validation.error.errors,
       });
     }
+
     const { fullName, email, password } = req.body;
 
     const exitingEmail = await User.findOne({ email });
@@ -23,7 +24,7 @@ exports.registerUser = async (req, res) => {
       });
     }
 
-    hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       fullName,
@@ -33,12 +34,17 @@ exports.registerUser = async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Muvaffaqiyatli ro'yxatdan o'tdingiz",
-      user: { fullName, email, _id: newUser._id, hashedPassword },
+      user: { 
+        _id: newUser._id, 
+        fullName, 
+        email 
+      },
     });
+
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: `Error registerUser-da : ${error.message}`,
     });
   }
@@ -69,7 +75,7 @@ exports.loginUser = async (req, res) => {
     });
 
     const accessToken = jwt.sign(
-      { id: user.id, fullName: user.fullName },
+      { id: user._id, fullName: user.fullName },
       process.env.JWT_TOKEN,
       { expiresIn: "15m" },
     );
@@ -84,6 +90,36 @@ exports.loginUser = async (req, res) => {
       message: `Error loginUser-da : ${error.message}`,
     });
     console.log(error);
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Avtorizatsiyadan o'tilmagan yoki token noto'g'ri",
+      });
+    }
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Foydalanuvchi topilmadi!",
+      });
+    }
+
+    return res.status(200).json({
+        message: "Malumot muvaffaqiyatli olindi",
+        user: user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+        message: `Error getProfile - da : ${error.message}`
+    });
   }
 };
 
@@ -106,7 +142,7 @@ exports.refreshUser = async (req, res) => {
       });
     }
 
-    const user = await User.findById(decoded.id); 
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(404).json({
         message: "Foydalanuvchi topilmadi!",
@@ -116,14 +152,12 @@ exports.refreshUser = async (req, res) => {
     const newAccessToken = jwt.sign(
       { id: user._id, fullName: user.fullName },
       process.env.JWT_TOKEN,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
-    const newRefreshToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_TOKEN,
-      { expiresIn: "7d" }
-    );
+    const newRefreshToken = jwt.sign({ id: user._id }, process.env.JWT_TOKEN, {
+      expiresIn: "7d",
+    });
 
     return res.status(200).json({
       tokens: {
@@ -131,14 +165,12 @@ exports.refreshUser = async (req, res) => {
         refreshToken: newRefreshToken,
       },
     });
-
   } catch (error) {
     return res.status(500).json({
       message: `Error refreshUser-da : ${error.message}`,
     });
   }
 };
-
 
 exports.logoutUser = async (req, res) => {
   try {
