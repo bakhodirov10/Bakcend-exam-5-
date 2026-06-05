@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 require("dotenv").config()
+const otpRouter = require("./routes/otp.routes")
 
 const connectDB = require("./config/db")
 const express = require("express")
@@ -19,6 +20,7 @@ connectDB()
 
 app.use("/api/auth", userRouter)
 app.use("/api", taskRouter)
+app.use("/api", otpRouter)
 
 
 app.listen(port, ()=>{
